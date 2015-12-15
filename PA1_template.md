@@ -7,15 +7,28 @@ output: html_document
 
 ##1. Loading and preprocessing the data
 
-```{r part1}
+
+```r
   library(ggplot2)
   act <- read.csv("activity.csv")
   summary(act)
 ```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
+
 ##2. What is mean total number of steps taken per day?
 
-```{r part2}
+
+```r
   options("scipen" = 100)
   total_steps <- aggregate(steps ~ date, data = act, FUN = sum)
   mean_steps <- round(mean(total_steps$steps), 2)
@@ -23,12 +36,20 @@ output: html_document
   qplot(total_steps$steps, xlab = "Total steps") + geom_histogram(colour="black", fill="blue")
 ```
 
-###Mean steps per day: `r mean_steps`.  Median steps per day: `r median_steps`.  
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk part2](figure/part2-1.png) 
+
+###Mean steps per day: 10766.19.  Median steps per day: 10765.  
 
 
 ##3. What is the average daily activity pattern?  
 
-```{r part3}
+
+```r
   options("scipen" = 100)
   interval_steps <- aggregate(steps ~ interval, data = act, FUN = mean)
   max_steps_per_interval <- round(max(interval_steps$steps), 2)
@@ -36,13 +57,16 @@ output: html_document
   ggplot(interval_steps, aes(interval, steps)) + geom_line() + labs(x = "Time interval", y = "Average steps per interval")
 ```
 
-###Max steps per time interval = `r max_steps_per_interval` occurs at time interval = `r interval_at_max`.    
+![plot of chunk part3](figure/part3-1.png) 
+
+###Max steps per time interval = 206.17 occurs at time interval = .    
 
 
 
 ##4. Imputing missing values  
 
-```{r part4}
+
+```r
   options("scipen" = 100)
   total_nas <- length(act$steps[is.na(act$steps)])
   #create copy of activity data frame and replase NA values with average value for 
@@ -54,16 +78,23 @@ output: html_document
   mean_steps_corrected <- round(mean(total_steps_corrected$steps), 2)
   median_steps_corrected <- round(median(total_steps_corrected$steps), 2)
   qplot(total_steps_corrected$steps, xlab = "Total steps") + geom_histogram(colour="black", fill="blue")
-
 ```
 
-###Total number of existing NA records with NA for steps: `r total_nas`.    
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk part4](figure/part4-1.png) 
+
+###Total number of existing NA records with NA for steps: 2304.    
 ###After correcting records with NA steps:
-###Mean steps per day: `r mean_steps_corrected`.  Median steps per day: `r median_steps_corrected`.  
+###Mean steps per day: 10766.19.  Median steps per day: 10766.19.  
 
 
 ##5. Are there differences in activity patterns between weekdays and weekends?  
-```{r part5}
+
+```r
 act_corr$day_type <- factor(ifelse(weekdays(as.Date(act_corr$date)) %in% c("Saturday", "Sunday"), "weekend", "weekday"))
 ac_split <- split(act_corr, act_corr$day_type)
 mean_steps_weekday <- aggregate(steps ~ interval, data = ac_split$weekday, FUN = mean)
@@ -83,7 +114,8 @@ mean_steps_weekend <- aggregate(steps ~ interval, data = ac_split$weekend, FUN =
        , main = "Weekend mean steps/interval"
 
          )
-
 ```
+
+![plot of chunk part5](figure/part5-1.png) 
 
 
